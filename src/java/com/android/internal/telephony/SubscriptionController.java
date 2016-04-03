@@ -1471,6 +1471,7 @@ public class SubscriptionController extends ISub.Stub {
             // Only re-map modems if the new default data sub is valid
             RadioAccessFamily[] rafs = new RadioAccessFamily[len];
             boolean atLeastOneMatch = false;
+            int slotId = PhoneConstants.DEFAULT_CARD_INDEX;
             for (int phoneId = 0; phoneId < len; phoneId++) {
                 Phone phone = sPhones[phoneId];
                 int raf;
@@ -1479,6 +1480,7 @@ public class SubscriptionController extends ISub.Stub {
                     // TODO Handle the general case of N modems and M subscriptions.
                     raf = proxyController.getMaxRafSupported();
                     atLeastOneMatch = true;
+                    slotId = phoneId;
                 } else {
                     // TODO Handle the general case of N modems and M subscriptions.
                     raf = proxyController.getMinRafSupported();
@@ -1512,7 +1514,7 @@ public class SubscriptionController extends ISub.Stub {
     }
 
     private boolean needsSim2gsmOnly() {
-        if (sCommandsInterfaces[0] instanceof RIL) {
+        if (sCommandsInterfaces != null && sCommandsInterfaces[0] instanceof RIL) {
             return ((RIL) sCommandsInterfaces[0]).needsOldRilFeature("sim2gsmonly");
         }
         return false;
