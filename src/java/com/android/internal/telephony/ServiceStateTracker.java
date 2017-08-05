@@ -993,8 +993,8 @@ public class ServiceStateTracker extends Handler {
                 }
                 // This will do nothing in the 'radio not available' case
                 setPowerStateToDesired();
+                // These events are modem triggered, so pollState() needs to be forced
                 if (mCi.getRilVersion() >= 10) {
-                    // These events are modem triggered, so pollState() needs to be forced
                     modemTriggeredPollState();
                 } else {
                     pollState();
@@ -2400,6 +2400,8 @@ public class ServiceStateTracker extends Handler {
                 DcTracker dcTracker = mPhone.mDcTracker;
                 powerOffRadioSafely(dcTracker);
             }
+        } else if (mDeviceShuttingDown && mCi.getRadioState().isAvailable()) {
+            mCi.requestShutdown(null);
         }
     }
 
@@ -5115,13 +5117,5 @@ public class ServiceStateTracker extends Handler {
   /** Check if the device is shutting down. */
     public boolean isDeviceShuttingDown() {
         return mDeviceShuttingDown;
-    }
-
-    /**
-     * {@hide}
-     */
-    public boolean isRatLte(int rat) {
-        return (rat == ServiceState.RIL_RADIO_TECHNOLOGY_LTE ||
-            rat == ServiceState.RIL_RADIO_TECHNOLOGY_LTE_CA);
     }
 }
